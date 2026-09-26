@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Voronoi & Delaunay — Generative Art Lab</title>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>Voronoi & Delaunay — Generative Art Lab</h1>
+
+      <div class="row">
+        <label>Technique (primary motif)</label>
+        <select id="motif" class="control">
+          <option value="voronoi-fill">Voronoi — filled cells</option>
+          <option value="voronoi-outline">Voronoi — outlines</option>
+          <option value="delaunay-fill">Delaunay — filled triangles</option>
+          <option value="wireframe">Wireframe overlay (dual)</option>
+          <option value="dual">Dual overlay: Voronoi + Delaunay</option>
+          <option value="centroids">Centroid dots</option>
+          <option value="hatch">Voronoi — hatched fill</option>
+        </select>
+      </div>
+
+      <div class="twoCol">
+        <div class="row"><label>Points</label><input id="nPts" type="range" min="20" max="400" value="150"><div class="small" id="nPtsV">150</div></div>
+        <div class="row"><label>Lloyd relax (iters)</label><input id="lloyd" type="range" min="0" max="5" value="1"><div class="small" id="lloydV">1</div></div>
+      </div>
+
+      <div class="twoCol">
+        <div class="row"><label>Stroke width</label><input id="strokeW" type="range" min="0" max="6" step="0.1" value="1.2"><div class="small" id="strokeWV">1.2</div></div>
+        <div class="row"><label>Opacity</label><input id="opacity" type="range" min="0.05" max="1" step="0.05" value="0.85"><div class="small" id="opacityV">0.85</div></div>
+      </div>
+
+      <div class="twoCol">
+        <div class="row"><label>Noise warp</label><input id="warp" type="range" min="0" max="40" step="1" value="10"><div class="small" id="warpV">10</div></div>
+        <div class="row"><label>Hatch density</label><input id="hatchD" type="range" min="4" max="30" step="1" value="12"><div class="small" id="hatchDV">12</div></div>
+      </div>
+
+      <div class="twoCol">
+        <div class="row"><label>Palette</label>
+          <select id="palette" class="control">
+            <option value="midnight">Midnight Neon</option>
+            <option value="sakura">Sakura Mist</option>
+            <option value="retro">Retro Pop</option>
+            <option value="earth">Earth Oxide</option>
+            <option value="mono">Monochrome</option>
+          </select>
+        </div>
+        <div class="row"><label>Background</label>
+          <select id="bgMode" class="control">
+            <option value="dark">Deep dark</option>
+            <option value="paper">Paper light</option>
+            <option value="gradient">Radial gradient</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="chip"><input id="jitter" type="checkbox" checked /> stroke jitter</label>
+        <label class="chip"><input id="shadow" type="checkbox" checked /> soft shadow</label>
+        <label class="chip"><input id="drawSites" type="checkbox" /> show sites</label>
+      </div>
+
+      <div class="sep"></div>
+      <h2>Randomness & Export</h2>
+      <div class="twoCol">
+        <div class="row"><label>Seed</label><input id="seed" type="text" value="voronoi-love-108" /></div>
+        <div class="row"><label>Aspect</label>
+          <select id="aspect" class="control">
+            <option value="1x1">1:1</option>
+            <option value="4x3" selected>4:3</option>
+            <option value="16x9">16:9</option>
+            <option value="poster">Poster 3:4</option>
+            <option value="ultra">Ultra-wide 21:9</option>
+          </select>
+        </div>
+      </div>
+      <div class="btnbar">
+        <button id="regen">Regenerate</button>
+        <button id="shuffle">Shuffle seed</button>
+        <button id="savePng">Save PNG</button>
+        <button id="saveSvg">Export SVG</button>
+      </div>
+      <div class="note">Tips: try <em>Dual overlay</em> + <em>Lloyd 2–3</em> + <em>noise warp 8–18</em> + <em>stroke jitter</em> for lively, print-ready patterns.</div>
+    </div>
+
+    <div id="canvasWrap">
+      <canvas id="c"></canvas>
+      <div class="footer">
+        <div class="badge">Voronoi & Delaunay Lab — seeded</div>
+        <div class="badge"><span id="palPrev" class="pal"></span></div>
+      </div>
+    </div>
+  </div>
+
+<script src="js/utils.js"></script>
+<script src="js/geometry.js"></script>
+<script src="js/palettes.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
