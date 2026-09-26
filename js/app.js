@@ -82,11 +82,9 @@ function main(){
     });
   });
 
-  ['jitter','shadow','drawSites'].forEach(id=>{
-    $('#' + id).addEventListener('change', ()=>{
-      generate();
-      updateStatus();
-    });
+  $('#drawSites').addEventListener('change', ()=>{
+    generate();
+    updateStatus();
   });
 
   $('#seed').addEventListener('change', ()=>{
