@@ -9,7 +9,9 @@
 <body>
   <div class="wrap">
     <div class="panel">
-      <h1>Voronoi & Delaunay — Generative Art Lab</h1>
+      <div class="app-kicker">Generative Geometry Lab</div>
+      <h1>Voronoi & Delaunay</h1>
+      <p class="app-subtitle">Seeded procedural composition using Voronoi cells, Delaunay triangulation and dual overlays.</p>
 
       <div class="row">
         <label>Technique (primary motif)</label>
@@ -79,18 +81,18 @@
         </div>
       </div>
       <div class="btnbar">
-        <button id="regen">Regenerate</button>
+        <button id="regen" class="primary">Regenerate</button>
         <button id="shuffle">Shuffle seed</button>
-        <button id="savePng">Save PNG</button>
+        <button id="savePng" class="secondary">Save PNG</button>
         <button id="saveSvg">Export SVG</button>
       </div>
-      <div class="note">Tips: try <em>Dual overlay</em> + <em>Lloyd 2–3</em> + <em>noise warp 8–18</em> + <em>stroke jitter</em> for lively, print-ready patterns.</div>
+      <div class="note">Try <em>Dual overlay</em> + <em>Lloyd 2–3</em> + <em>noise warp 8–18</em> + <em>stroke jitter</em> for lively, print-ready patterns.</div>
     </div>
 
     <div id="canvasWrap">
       <canvas id="c"></canvas>
       <div class="footer">
-        <div class="badge">Voronoi & Delaunay Lab — seeded</div>
+        <div class="badge">Voronoi & Delaunay Lab · seeded</div>
         <div class="badge"><span id="palPrev" class="pal"></span></div>
       </div>
     </div>
