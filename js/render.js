@@ -3,7 +3,7 @@ const canvas = $('#c'); const ctx = canvas.getContext('2d');
 
 function setAspect(){
   const v = $('#aspect').value;
-  const map = { '1x1':[1000,1000], '4x3':[1280,960], '16x9':[1440,810], 'poster':[1200,1600], 'ultra':[1680,720] };
+  const map = { '1x1':[1000,1000], '4x3':[1280,960], '3x2':[1440,960], '16x9':[1440,810], 'poster':[1200,1600], '2x3':[1200,1800], 'ultra':[1680,720] };
   const [w,h] = map[v] || [1280,960];
   canvas.width = w; canvas.height = h;
   fitCanvasToContainer(canvas);
