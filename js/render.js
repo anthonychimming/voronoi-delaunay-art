@@ -100,7 +100,6 @@ function generate(){
   const motif = $('#motif').value;
   const n = +$('#nPts').value;
   const seedStr = $('#seed').value.trim() || 'seed';
-  const jitter = $('#jitter').checked;
   const strokeW = +$('#strokeW').value;
   const opacity = +$('#opacity').value;
   const warpAmt = +$('#warp').value;
@@ -126,26 +125,8 @@ function generate(){
   ctx.save();
   drawBackground(bgMode, canvas.width, canvas.height);
 
-  // Soft shadow layer
-  if($('#shadow').checked){
-    ctx.save();
-    ctx.globalAlpha = 0.08;
-    ctx.filter = 'blur(2.5px)';
-    ctx.strokeStyle = 'black'; ctx.lineWidth = strokeW + 1.5;
-    if(motif.includes('delaunay')){
-      ctx.beginPath();
-      for(const t of tris){ ctx.moveTo(t.a.x,t.a.y); ctx.lineTo(t.b.x,t.b.y); ctx.lineTo(t.c.x,t.c.y); ctx.closePath(); }
-      ctx.stroke();
-    } else {
-      for(const poly of cells){ pathPolygon(poly); ctx.stroke(); }
-    }
-    ctx.restore();
-  }
-
   ctx.globalAlpha = opacity;
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-
-  function jittered(p, amt){ if(!amt) return p; const a = (rand()*Math.PI*2), r=(rand()-0.5)*amt; return {x:p.x+Math.cos(a)*r, y:p.y+Math.sin(a)*r}; }
 
   // Render motifs
   if(motif==='delaunay-fill' || motif==='dual' || motif==='wireframe'){
@@ -159,8 +140,7 @@ function generate(){
       }
       ctx.strokeStyle = '#0a0f1c'; ctx.lineWidth = strokeW;
       ctx.beginPath();
-      const a=jitter?jittered(t.a, 0.6):t.a, b=jitter?jittered(t.b,0.6):t.b, c=jitter?jittered(t.c,0.6):t.c;
-      ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.closePath(); ctx.stroke();
+      ctx.moveTo(t.a.x,t.a.y); ctx.lineTo(t.b.x,t.b.y); ctx.lineTo(t.c.x,t.c.y); ctx.closePath(); ctx.stroke();
     }
   }
 
@@ -179,25 +159,13 @@ function generate(){
       ctx.strokeStyle = '#0c1428'; ctx.lineWidth = strokeW;
       if(motif!=='centroids'){
         pathPolygon(poly);
-        // add slight jitter along edges if requested
-        if(jitter){
-          // Deterministic second pass: use the seeded PRNG and contain the transform.
-          ctx.globalAlpha = Math.max(0.2, opacity-0.2);
-          ctx.stroke();
-          ctx.save();
-          ctx.translate((rand()-0.5)*0.2, (rand()-0.5)*0.2);
-          ctx.globalAlpha = opacity;
-          ctx.stroke();
-          ctx.restore();
-        } else {
-          ctx.stroke();
-        }
+        ctx.stroke();
       }
 
       if(motif==='centroids' || $('#drawSites').checked){
         const c = polygonCentroid(poly);
         ctx.fillStyle = col;
-        ctx.beginPath(); ctx.arc(c.x, c.y, 2.2 + (jitter?0.8:0), 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(c.x, c.y, 2.2, 0, Math.PI*2); ctx.fill();
       }
     }
   }
