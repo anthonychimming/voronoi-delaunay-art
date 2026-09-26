@@ -1,14 +1,23 @@
 /* ========= Utilities ========= */
 const $ = sel => document.querySelector(sel);
 const CSIZE = { w: 1280, h: 960 }; // base; will scale to fit container
+
 function fitCanvasToContainer(canvas){
   const wrap = canvas.parentElement;
-  const aspect = canvas.width/canvas.height;
-  const w = wrap.clientWidth, h = wrap.clientHeight;
-  // Fill area while preserving intrinsic canvas size via CSS scaling
-  const wrapAspect = w/h;
-  if(wrapAspect > aspect){ canvas.style.height = '100%'; canvas.style.width = 'auto'; }
-  else { canvas.style.width = '100%'; canvas.style.height = 'auto'; }
+  if(!wrap) return;
+
+  const styles = getComputedStyle(wrap);
+  const padX = (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
+  const padY = (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);
+  const availableW = Math.max(1, wrap.clientWidth - padX);
+  const availableH = Math.max(1, wrap.clientHeight - padY);
+
+  const scale = Math.min(availableW / canvas.width, availableH / canvas.height);
+  const cssW = Math.max(1, Math.floor(canvas.width * scale));
+  const cssH = Math.max(1, Math.floor(canvas.height * scale));
+
+  canvas.style.width = cssW + 'px';
+  canvas.style.height = cssH + 'px';
 }
 
 function seededPRNG(seed){
