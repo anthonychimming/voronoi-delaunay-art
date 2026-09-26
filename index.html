@@ -7,71 +7,141 @@
 <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="wrap">
-    <div class="panel">
-      <div class="app-kicker">Generative Geometry Lab</div>
-      <h1>Voronoi & Delaunay</h1>
-      <p class="app-subtitle">Seeded procedural composition using Voronoi cells, Delaunay triangulation and dual overlays.</p>
+  <main class="app-shell">
+    <aside class="inspector" aria-label="Generative art controls">
+      <header class="inspector-header">
+        <div class="app-kicker">Generative Geometry Lab</div>
+        <h1>Voronoi & Delaunay</h1>
+        <p>Seeded procedural composition using Voronoi cells, Delaunay triangulation and dual overlays.</p>
+      </header>
 
-      <div class="row">
-        <label>Technique (primary motif)</label>
-        <select id="motif" class="control">
-          <option value="voronoi-fill">Voronoi — filled cells</option>
-          <option value="voronoi-outline">Voronoi — outlines</option>
-          <option value="delaunay-fill">Delaunay — filled triangles</option>
-          <option value="wireframe">Wireframe overlay (dual)</option>
-          <option value="dual">Dual overlay: Voronoi + Delaunay</option>
-          <option value="centroids">Centroid dots</option>
-          <option value="hatch">Voronoi — hatched fill</option>
-        </select>
-      </div>
-
-      <div class="twoCol">
-        <div class="row"><label>Points</label><input id="nPts" type="range" min="20" max="400" value="150"><div class="small" id="nPtsV">150</div></div>
-        <div class="row"><label>Lloyd relax (iters)</label><input id="lloyd" type="range" min="0" max="5" value="1"><div class="small" id="lloydV">1</div></div>
-      </div>
-
-      <div class="twoCol">
-        <div class="row"><label>Stroke width</label><input id="strokeW" type="range" min="0" max="6" step="0.1" value="1.2"><div class="small" id="strokeWV">1.2</div></div>
-        <div class="row"><label>Opacity</label><input id="opacity" type="range" min="0.05" max="1" step="0.05" value="0.85"><div class="small" id="opacityV">0.85</div></div>
-      </div>
-
-      <div class="twoCol">
-        <div class="row"><label>Noise warp</label><input id="warp" type="range" min="0" max="40" step="1" value="10"><div class="small" id="warpV">10</div></div>
-        <div class="row"><label>Hatch density</label><input id="hatchD" type="range" min="4" max="30" step="1" value="12"><div class="small" id="hatchDV">12</div></div>
-      </div>
-
-      <div class="twoCol">
-        <div class="row"><label>Palette</label>
-          <select id="palette" class="control">
-            <option value="midnight">Midnight Neon</option>
-            <option value="sakura">Sakura Mist</option>
-            <option value="retro">Retro Pop</option>
-            <option value="earth">Earth Oxide</option>
-            <option value="mono">Monochrome</option>
+      <section class="control-section" aria-labelledby="motifHeading">
+        <h2 id="motifHeading" class="section-title">Motif</h2>
+        <div class="field">
+          <label for="motif">Primary motif</label>
+          <select id="motif">
+            <option value="voronoi-fill">Voronoi — filled cells</option>
+            <option value="voronoi-outline">Voronoi — outlines</option>
+            <option value="delaunay-fill">Delaunay — filled triangles</option>
+            <option value="wireframe">Wireframe overlay (dual)</option>
+            <option value="dual">Dual overlay: Voronoi + Delaunay</option>
+            <option value="centroids">Centroid dots</option>
+            <option value="hatch">Voronoi — hatched fill</option>
           </select>
         </div>
-        <div class="row"><label>Background</label>
-          <select id="bgMode" class="control">
-            <option value="dark">Deep dark</option>
-            <option value="paper">Paper light</option>
-            <option value="gradient">Radial gradient</option>
-          </select>
+      </section>
+
+      <section class="control-section" aria-labelledby="geometryHeading">
+        <h2 id="geometryHeading" class="section-title">Geometry</h2>
+        <div class="control-grid">
+          <div class="range-field">
+            <div class="range-head">
+              <label for="nPts">Points</label>
+              <output id="nPtsV" for="nPts">150</output>
+            </div>
+            <input id="nPts" type="range" min="20" max="400" value="150">
+          </div>
+
+          <div class="range-field">
+            <div class="range-head">
+              <label for="lloyd">Lloyd relaxation</label>
+              <output id="lloydV" for="lloyd">1</output>
+            </div>
+            <input id="lloyd" type="range" min="0" max="5" value="1">
+          </div>
+
+          <div class="range-field control-grid-span">
+            <div class="range-head">
+              <label for="warp">Noise warp</label>
+              <output id="warpV" for="warp">10</output>
+            </div>
+            <input id="warp" type="range" min="0" max="40" step="1" value="10">
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="row">
-        <label class="chip"><input id="jitter" type="checkbox" checked /> stroke jitter</label>
-        <label class="chip"><input id="shadow" type="checkbox" checked /> soft shadow</label>
-        <label class="chip"><input id="drawSites" type="checkbox" /> show sites</label>
-      </div>
+      <section class="control-section" aria-labelledby="appearanceHeading">
+        <h2 id="appearanceHeading" class="section-title">Appearance</h2>
 
-      <div class="sep"></div>
-      <h2>Randomness & Export</h2>
-      <div class="twoCol">
-        <div class="row"><label>Seed</label><input id="seed" type="text" value="voronoi-love-108" /></div>
-        <div class="row"><label>Aspect</label>
-          <select id="aspect" class="control">
+        <div class="control-grid">
+          <div class="range-field">
+            <div class="range-head">
+              <label for="strokeW">Stroke width</label>
+              <output id="strokeWV" for="strokeW">1.2</output>
+            </div>
+            <input id="strokeW" type="range" min="0" max="6" step="0.1" value="1.2">
+          </div>
+
+          <div class="range-field">
+            <div class="range-head">
+              <label for="opacity">Opacity</label>
+              <output id="opacityV" for="opacity">0.85</output>
+            </div>
+            <input id="opacity" type="range" min="0.05" max="1" step="0.05" value="0.85">
+          </div>
+
+          <div id="hatchField" class="range-field control-grid-span" hidden>
+            <div class="range-head">
+              <label for="hatchD">Hatch density</label>
+              <output id="hatchDV" for="hatchD">12</output>
+            </div>
+            <input id="hatchD" type="range" min="4" max="30" step="1" value="12">
+          </div>
+        </div>
+
+        <div class="select-grid">
+          <div class="field">
+            <label for="palette">Palette</label>
+            <select id="palette">
+              <option value="midnight">Midnight Neon</option>
+              <option value="sakura">Sakura Mist</option>
+              <option value="retro">Retro Pop</option>
+              <option value="earth">Earth Oxide</option>
+              <option value="mono">Monochrome</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="bgMode">Background</label>
+            <select id="bgMode">
+              <option value="dark">Deep dark</option>
+              <option value="paper">Paper light</option>
+              <option value="gradient">Radial gradient</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="palette-preview" aria-label="Selected palette">
+          <span class="palette-preview-label">Palette preview</span>
+          <span id="palPrev" class="pal" aria-hidden="true"></span>
+        </div>
+
+        <div class="toggle-group" aria-label="Rendering options">
+          <label class="toggle-chip" for="jitter">
+            <input id="jitter" type="checkbox" checked>
+            <span>Stroke jitter</span>
+          </label>
+          <label class="toggle-chip" for="shadow">
+            <input id="shadow" type="checkbox" checked>
+            <span>Soft shadow</span>
+          </label>
+          <label id="sitesToggle" class="toggle-chip toggle-chip-wide" for="drawSites">
+            <input id="drawSites" type="checkbox">
+            <span>Show sites</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="control-section" aria-labelledby="seedHeading">
+        <h2 id="seedHeading" class="section-title">Seed & Canvas</h2>
+        <div class="field">
+          <label for="seed">Seed</label>
+          <input id="seed" type="text" value="voronoi-love-108" spellcheck="false" autocomplete="off">
+        </div>
+
+        <div class="field field-gap">
+          <label for="aspect">Aspect ratio</label>
+          <select id="aspect">
             <option value="1x1">1:1</option>
             <option value="4x3" selected>4:3</option>
             <option value="16x9">16:9</option>
@@ -79,24 +149,37 @@
             <option value="ultra">Ultra-wide 21:9</option>
           </select>
         </div>
-      </div>
-      <div class="btnbar">
-        <button id="regen" class="primary">Regenerate</button>
-        <button id="shuffle">Shuffle seed</button>
-        <button id="savePng" class="secondary">Save PNG</button>
-        <button id="saveSvg">Export SVG</button>
-      </div>
-      <div class="note">Try <em>Dual overlay</em> + <em>Lloyd 2–3</em> + <em>noise warp 8–18</em> + <em>stroke jitter</em> for lively, print-ready patterns.</div>
-    </div>
 
-    <div id="canvasWrap">
-      <canvas id="c"></canvas>
-      <div class="footer">
-        <div class="badge">Voronoi & Delaunay Lab · seeded</div>
-        <div class="badge"><span id="palPrev" class="pal"></span></div>
+        <div class="action-grid">
+          <button id="shuffle" class="primary" type="button">New variation</button>
+          <button id="regen" type="button">Regenerate</button>
+        </div>
+      </section>
+
+      <section class="control-section" aria-labelledby="exportHeading">
+        <h2 id="exportHeading" class="section-title">Export</h2>
+        <div class="action-grid">
+          <button id="savePng" type="button">Save PNG</button>
+          <button id="saveSvg" type="button">Export SVG</button>
+        </div>
+        <p class="helper">PNG preserves the rendered canvas. SVG exports the vector geometry representation.</p>
+      </section>
+    </aside>
+
+    <section id="canvasWrap" class="workspace" aria-label="Generated artwork workspace">
+      <div id="canvasStage" class="canvas-stage">
+        <canvas id="c" aria-label="Generated Voronoi and Delaunay artwork"></canvas>
       </div>
-    </div>
-  </div>
+      <footer class="canvas-status" aria-label="Artwork status">
+        <div class="status-group">
+          <span id="statusSites">150 sites</span>
+          <span id="statusResolution">1280×960</span>
+          <span id="statusMotif">Voronoi — filled cells</span>
+        </div>
+        <div id="statusSeed" class="status-seed">seed · voronoi-love-108</div>
+      </footer>
+    </section>
+  </main>
 
 <script src="js/utils.js"></script>
 <script src="js/geometry.js"></script>
