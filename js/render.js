@@ -181,13 +181,17 @@ function generate(){
         pathPolygon(poly);
         // add slight jitter along edges if requested
         if(jitter){
-          // fake jitter by drawing twice with small offsets
+          // Deterministic second pass: use the seeded PRNG and contain the transform.
           ctx.globalAlpha = Math.max(0.2, opacity-0.2);
           ctx.stroke();
-          ctx.translate( (Math.random()-0.5)*0.2, (Math.random()-0.5)*0.2 );
+          ctx.save();
+          ctx.translate((rand()-0.5)*0.2, (rand()-0.5)*0.2);
           ctx.globalAlpha = opacity;
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          ctx.stroke();
         }
-        ctx.stroke();
       }
 
       if(motif==='centroids' || $('#drawSites').checked){
