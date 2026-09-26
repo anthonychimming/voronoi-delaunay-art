@@ -1,6 +1,6 @@
 # Voronoi & Delaunay — Generative Art Lab
 
-Development split of the original standalone HTML app. No build step or external dependencies are required.
+Voronoi & Delaunay Art is an interactive generative art tool that transforms images into geometric compositions built from Voronoi cells and Delaunay triangulation, with adjustable styling, colour palettes, stroke treatment, and rendering controls for creating distinctive abstract, low-poly, and mosaic-like artwork.
 
 ## Structure
 
@@ -34,3 +34,9 @@ Then open `http://localhost:8000/`.
 - Behavior and control IDs are preserved from the standalone version.
 - Scripts remain classic ordered scripts rather than ES modules, so the split does not require a bundler or import/export refactor.
 - The file order in `index.html` is significant because later files use functions/constants declared earlier.
+
+## License
+
+Voronoi & Delaunay Art is distributed under the **GNU General Public License v2.0 or later**. See **[LICENSE](LICENSE)**.
+
+The project is inspired by the open-source [Filter Foundry](https://github.com/danielmarschall/filter_foundry) project and preserves the relevant attribution in the source.
