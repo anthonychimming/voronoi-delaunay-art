@@ -38,5 +38,3 @@ Then open `http://localhost:8000/`.
 ## License
 
 Voronoi & Delaunay Art is distributed under the **GNU General Public License v2.0 or later**. See **[LICENSE](LICENSE)**.
-
-The project is inspired by the open-source [Filter Foundry](https://github.com/danielmarschall/filter_foundry) project and preserves the relevant attribution in the source.
