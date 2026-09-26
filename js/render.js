@@ -138,9 +138,13 @@ function generate(){
         ctx.beginPath();
         ctx.moveTo(t.a.x,t.a.y); ctx.lineTo(t.b.x,t.b.y); ctx.lineTo(t.c.x,t.c.y); ctx.closePath(); ctx.fill();
       }
-      ctx.strokeStyle = '#0a0f1c'; ctx.lineWidth = strokeW;
-      ctx.beginPath();
-      ctx.moveTo(t.a.x,t.a.y); ctx.lineTo(t.b.x,t.b.y); ctx.lineTo(t.c.x,t.c.y); ctx.closePath(); ctx.stroke();
+      if(strokeW > 0){
+        ctx.strokeStyle = '#0a0f1c';
+        ctx.lineWidth = strokeW;
+        ctx.beginPath();
+        ctx.moveTo(t.a.x,t.a.y); ctx.lineTo(t.b.x,t.b.y); ctx.lineTo(t.c.x,t.c.y); ctx.closePath();
+        ctx.stroke();
+      }
     }
   }
 
@@ -155,9 +159,10 @@ function generate(){
         ctx.fillStyle = col; pathPolygon(poly); ctx.fill();
       }
 
-      // edges
-      ctx.strokeStyle = '#0c1428'; ctx.lineWidth = strokeW;
-      if(motif!=='centroids'){
+      // edges: CanvasRenderingContext2D ignores lineWidth=0, so do not stroke at all.
+      if(motif!=='centroids' && strokeW > 0){
+        ctx.strokeStyle = '#0c1428';
+        ctx.lineWidth = strokeW;
         pathPolygon(poly);
         ctx.stroke();
       }
@@ -170,10 +175,11 @@ function generate(){
     }
   }
 
-  // Wireframe overlay (dual)
-  if(motif==='dual' || motif==='wireframe'){
+  // Wireframe overlay (dual). Respect a zero stroke width as "no lines".
+  if((motif==='dual' || motif==='wireframe') && strokeW > 0){
     ctx.globalAlpha = Math.min(1, opacity+0.05);
-    ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = Math.max(0.6, strokeW*0.7);
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    ctx.lineWidth = Math.max(0.6, strokeW*0.7);
     for(const poly of cells){ pathPolygon(poly); ctx.stroke(); }
   }
 
