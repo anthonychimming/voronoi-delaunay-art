@@ -105,7 +105,7 @@ function generate(){
   const warpAmt = +$('#warp').value;
   const hatchDensity = +$('#hatchD').value;
   const bgMode = $('#bgMode').value;
-  const pal = PALETTES[$('#palette').value];
+  const pal = getActivePalette();
 
   const rand = seededPRNG(seedStr);
   const noise = Simplex2D(seedStr);
@@ -203,7 +203,7 @@ function generate(){
       svg += `<rect width="100%" height="100%" fill="#09101d"/>`;
     }
     // content
-    const pal = PALETTES[$('#palette').value];
+    // Share the palette resolved for this Canvas render.
     const stroke = '#0c1428';
     if(motif==='delaunay-fill' || motif==='dual' || motif==='wireframe'){
       let i=0;

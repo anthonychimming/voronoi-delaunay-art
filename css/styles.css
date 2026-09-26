@@ -280,6 +280,35 @@ input[type="range"]:focus-visible{outline-offset:1px}
   font-size:10.5px;
 }
 .pal{display:flex;align-items:center;gap:4px}
+.palette-preview.is-custom{display:block}
+.custom-palette-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin-top:7px;
+}
+.custom-color{display:flex;align-items:center;gap:7px;min-width:0}
+.custom-color input[type="text"]{padding:0 6px}
+.custom-color-swatch{
+  position:relative;
+  flex:0 0 20px;
+  height:20px;
+  border:1px solid var(--control-border);
+  border-radius:3px;
+}
+.custom-color-swatch input{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  padding:0;
+  opacity:0;
+  cursor:pointer;
+}
+.custom-color-swatch:has(input:focus-visible){
+  outline:3px solid var(--accent);
+  outline-offset:3px;
+}
 .sw{
   width:14px;
   height:14px;
@@ -434,6 +463,7 @@ button.primary:hover{
 }
 
 @media(max-width:920px){
+  .custom-palette-grid{grid-template-columns:1fr}
   .app-shell{
     grid-template-columns:minmax(0,1fr) 300px;
     gap:10px;
@@ -445,6 +475,7 @@ button.primary:hover{
 }
 
 @media(max-width:720px){
+  .custom-palette-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   body{overflow:auto}
   .app-shell{
     display:flex;
@@ -478,6 +509,7 @@ button.primary:hover{
 }
 
 @media(max-width:480px){
+  .custom-palette-grid{grid-template-columns:1fr}
   .control-grid,
   .select-grid,
   .toggle-group,

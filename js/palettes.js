@@ -9,4 +9,14 @@ const PALETTES = {
   digital:  ['#004e64','#00a5cf','#9fffcb','#25a18e','#7ae582'],
   mono:     ['#e5e7eb','#cbd5e1','#94a3b8','#64748b','#475569','#1f2937']
 };
-function palettePreview(){ const el=$('#palPrev'); el.innerHTML=''; const pal=PALETTES[$('#palette').value]; pal.forEach(c=>{ const sw=document.createElement('div'); sw.className='sw'; sw.style.background=c; el.appendChild(sw);}); }
+const DEFAULT_CUSTOM_PALETTE = [
+  '#264653', '#2A9D8F', '#E9C46A', '#F4A261', '#E76F51', '#F1FAEE'
+];
+
+function isValidHex(value){
+  return typeof value === 'string' && /^#?[0-9a-f]{6}$/i.test(value);
+}
+
+function normalizeHex(value){
+  return isValidHex(value) ? '#' + value.replace(/^#/, '').toUpperCase() : null;
+}

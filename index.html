@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Voronoi & Delaunay — Generative Art Lab</title>
-<link rel="stylesheet" href="css/styles.css?v=20260926-right-panel-v2" />
+<link rel="stylesheet" href="css/styles.css?v=20260926-custom-palette" />
 </head>
 <body>
   <main class="app-shell">
@@ -101,6 +101,7 @@
               <option value="desert">Desert Studio</option>
               <option value="digital">Digital Mint</option>
               <option value="mono">Monochrome</option>
+              <option value="custom">Custom Palette</option>
             </select>
           </div>
 
@@ -114,9 +115,9 @@
           </div>
         </div>
 
-        <div class="palette-preview" aria-label="Selected palette">
+        <div id="paletteRegion" class="palette-preview" aria-label="Selected palette">
           <span class="palette-preview-label">Palette preview</span>
-          <span id="palPrev" class="pal" aria-hidden="true"></span>
+          <span class="pal" aria-hidden="true"></span>
         </div>
 
         <div class="toggle-group" aria-label="Rendering options">
@@ -178,8 +179,8 @@
 
 <script src="js/utils.js"></script>
 <script src="js/geometry.js"></script>
-<script src="js/palettes.js?v=20260926-designer-palettes"></script>
-<script src="js/render.js?v=20260926-stroke-zero-fix"></script>
-<script src="js/app.js?v=20260926-effects-cleanup"></script>
+<script src="js/palettes.js?v=20260926-custom-palette"></script>
+<script src="js/render.js?v=20260926-custom-palette"></script>
+<script src="js/app.js?v=20260926-custom-palette"></script>
 </body>
 </html>
