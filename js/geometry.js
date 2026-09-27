@@ -100,7 +100,14 @@ function voronoiCells(sites, bounds){
     return poly;
   });
 }
+function isFinitePoint(p){
+  return !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
+}
+function isValidPolygon(poly){
+  return Array.isArray(poly) && poly.length >= 3 && poly.every(isFinitePoint);
+}
 function polygonCentroid(poly){
+  if(!isValidPolygon(poly)) return null;
   let a=0, cx=0, cy=0;
   for(let i=0;i<poly.length;i++){
     const p = poly[i], q = poly[(i+1)%poly.length];
@@ -111,8 +118,10 @@ function polygonCentroid(poly){
   if(Math.abs(a)<1e-7){
     // fallback average
     let sx=0, sy=0; for(const p of poly){ sx+=p.x; sy+=p.y; }
-    const n = Math.max(1, poly.length);
-    return {x:sx/n, y:sy/n, area:0};
+    const n = poly.length;
+    const c = {x:sx/n, y:sy/n, area:0};
+    return isFinitePoint(c) ? c : null;
   }
-  return {x:cx/(6*a), y:cy/(6*a), area:Math.abs(a)};
+  const c = {x:cx/(6*a), y:cy/(6*a), area:Math.abs(a)};
+  return isFinitePoint(c) && Number.isFinite(c.area) ? c : null;
 }
