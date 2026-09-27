@@ -46,6 +46,13 @@ function palettePreview(){
   const colors = document.createElement('div');
   colors.className = custom ? 'custom-palette-grid' : 'pal';
   if(!custom) colors.setAttribute('aria-hidden', 'true');
+  if(custom){
+    const help = document.createElement('span');
+    help.id = 'customPaletteHelp';
+    help.className = 'sr-only';
+    help.textContent = 'Enter six hexadecimal digits, with or without a leading hash. Incomplete values keep the last valid color and reset when you leave the field.';
+    region.appendChild(help);
+  }
   getActivePalette().forEach((color, index)=>{
     if(!custom){
       const swatch = document.createElement('div');
@@ -70,15 +77,20 @@ function palettePreview(){
     field.spellcheck = false;
     field.autocomplete = 'off';
     field.setAttribute('aria-label', `Custom palette color ${index + 1}`);
+    field.setAttribute('aria-describedby', 'customPaletteHelp');
     field.addEventListener('input', ()=>{
       // Preserve the draft and caret while rendering only complete colors.
       updateCustomColor(index, field.value, picker, swatch);
     });
-    field.addEventListener('blur', ()=>{ field.value = customPalette[index]; });
+    field.addEventListener('blur', ()=>{
+      field.value = customPalette[index];
+      scheduleRender(true);
+    });
     picker.addEventListener('input', ()=>{
       field.value = normalizeHex(picker.value);
       updateCustomColor(index, picker.value, picker, swatch);
     });
+    picker.addEventListener('change', ()=>scheduleRender(true));
     control.append(swatch, field);
     colors.appendChild(control);
   });
@@ -106,6 +118,7 @@ function updateControlState(){
   sites.disabled = sitesRedundant;
   sitesToggle.classList.toggle('is-disabled', sitesRedundant);
   sitesToggle.setAttribute('aria-disabled', String(sitesRedundant));
+  sitesToggle.title = sitesRedundant ? 'Show sites is disabled for Centroid dots.' : '';
 }
 
 function updateStatus(){
@@ -117,7 +130,9 @@ function updateStatus(){
 }
 
 let renderRequestId = null;
-function scheduleRender(){
+let announceNextRender = false;
+function scheduleRender(announce=false){
+  announceNextRender = announceNextRender || announce;
   if(renderRequestId !== null) return;
   renderRequestId = requestAnimationFrame(()=>{
     renderRequestId = null;
@@ -139,6 +154,12 @@ function renderFromUI(){
   updateControlState();
   generate();
   updateStatus();
+  if(announceNextRender){
+    announceNextRender = false;
+    const {state} = currentScene;
+    const motifName = $('#statusMotif').textContent;
+    $('#artworkAnnouncement').textContent = `Artwork updated. ${motifName}, ${state.n} sites, ${state.width} by ${state.height} pixels. Seed ${state.seedStr}.`;
+  }
 }
 
 function main(){
@@ -153,24 +174,24 @@ function main(){
 
   $('#motif').addEventListener('change', ()=>{
     updateControlState();
-    scheduleRender();
+    scheduleRender(true);
     updateStatus();
   });
 
   $('#palette').addEventListener('change', ()=>{
     palettePreview();
-    scheduleRender();
+    scheduleRender(true);
     updateStatus();
   });
 
   $('#bgMode').addEventListener('change', ()=>{
-    scheduleRender();
+    scheduleRender(true);
     updateStatus();
   });
 
   $('#aspect').addEventListener('change', ()=>{
     setAspect();
-    scheduleRender();
+    scheduleRender(true);
     updateStatus();
   });
 
@@ -182,28 +203,29 @@ function main(){
       scheduleRender();
       updateStatus();
     });
+    input.addEventListener('change', ()=>scheduleRender(true));
   });
 
   $('#drawSites').addEventListener('change', ()=>{
-    scheduleRender();
+    scheduleRender(true);
     updateStatus();
   });
 
   $('#seed').addEventListener('change', ()=>{
-    scheduleRender();
+    scheduleRender(true);
     updateStatus();
   });
   $('#seed').addEventListener('keydown', e=>{
     if(e.key === 'Enter'){
       e.preventDefault();
-      scheduleRender();
+      scheduleRender(true);
       updateStatus();
     }
   });
 
   $('#shuffle').onclick = ()=>{
     shuffleSeed();
-    scheduleRender();
+    scheduleRender(true);
     updateStatus();
   };
 

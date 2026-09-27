@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Voronoi & Delaunay — Generative Art Lab</title>
-<link rel="stylesheet" href="css/styles.css?v=20260926-custom-palette" />
+<link rel="stylesheet" href="css/styles.css?v=20260927-pass3" />
 </head>
 <body>
   <main class="app-shell">
@@ -165,7 +165,7 @@
 
     <section id="canvasWrap" class="workspace" aria-label="Generated artwork workspace">
       <div id="canvasStage" class="canvas-stage">
-        <canvas id="c" aria-label="Generated Voronoi and Delaunay artwork"></canvas>
+        <canvas id="c" role="img" aria-label="Generated Voronoi and Delaunay artwork" aria-describedby="statusSites statusResolution statusMotif statusSeed">Generated Voronoi and Delaunay artwork. Use the controls to adjust the composition and export it as PNG or SVG.</canvas>
       </div>
       <footer class="canvas-status" aria-label="Artwork status">
         <div class="status-group">
@@ -175,13 +175,14 @@
         </div>
         <div id="statusSeed" class="status-seed">seed · voronoi-love-108</div>
       </footer>
+      <div id="artworkAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     </section>
   </main>
 
-<script src="js/utils.js"></script>
-<script src="js/geometry.js?v=20260927-pass1"></script>
+<script src="js/utils.js?v=20260927-pass3"></script>
+<script src="js/geometry.js?v=20260927-pass3"></script>
 <script src="js/palettes.js?v=20260926-custom-palette"></script>
-<script src="js/render.js?v=20260927-pass2"></script>
-<script src="js/app.js?v=20260927-pass2"></script>
+<script src="js/render.js?v=20260927-pass3"></script>
+<script src="js/app.js?v=20260927-pass3"></script>
 </body>
 </html>

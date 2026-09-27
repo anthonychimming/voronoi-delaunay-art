@@ -105,7 +105,6 @@ const assert = require('node:assert/strict');
     }
     await page.locator('#seed').fill('palette-regression');
     await page.locator('#seed').press('Enter');
-    await page.locator('#regen').click();
     await page.locator('#shuffle').click();
     assert.notEqual(await page.locator('#seed').inputValue(), 'palette-regression');
     for(const malformed of ['{','null','{}','[]','["#FFFFFF"]', JSON.stringify(Array(6).fill('red'))]){

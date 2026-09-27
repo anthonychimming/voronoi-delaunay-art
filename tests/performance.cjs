@@ -132,7 +132,7 @@ const { execFileSync } = require('node:child_process');
       assert.ok(download.suggestedFilename().endsWith(id==='saveSvg'?'.svg':'.png'));
     }
     await page.waitForFunction(()=>createdURLs.length===2&&createdURLs.every(url=>revokedURLs.includes(url)));
-    // Use the accepted Pass 1 revision to compare seeded pixels and exact SVG output.
+    // Keep exact parity with Pass 1 for motifs unaffected by hatch optimization.
     const baseline=await browser.newPage();
     const gitArgs=['-c','safe.directory=C:/Users/ghett/OneDrive/Documents/ChatGPT/voronoi-delaunay-art','show'];
     for(const file of ['js/render.js','js/app.js']){
@@ -150,13 +150,13 @@ const { execFileSync } = require('node:child_process');
       try { $('#saveSvg').onclick(); return {png,svg:await promise}; }
       finally { download=originalDownload; }
     },motif);
-    for(const motif of ['voronoi-fill','voronoi-outline','delaunay-fill','wireframe','dual','centroids','hatch']){
+    for(const motif of ['voronoi-fill','voronoi-outline','delaunay-fill','wireframe','dual','centroids']){
       const actual=await snapshots(page,motif), expected=await snapshots(baseline,motif);
       assert.ok(actual.png===expected.png,`${motif}: exact Pass 1 Canvas pixels`);
       assert.ok(actual.svg===expected.svg,`${motif}: exact Pass 1 SVG output`);
     }
     assert.deepEqual(errors,[]);
-    console.log('PASS: cache invalidation/reuse at stress settings, frame coalescing, lazy SVG, pending-export flush, stable handlers, null PNG, URL cleanup, and exact Pass 1 pixel/SVG parity.');
+    console.log('PASS: cache invalidation/reuse at stress settings, frame coalescing, lazy SVG, pending-export flush, stable handlers, null PNG, URL cleanup, and exact Pass 1 pixel/SVG parity for non-hatch motifs.');
     console.log('Appearance control end-to-end frame timings (ms):',JSON.stringify(timings));
   } finally { await browser.close(); }
 })().catch(error=>{ console.error(error); process.exitCode=1; });

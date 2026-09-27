@@ -8,14 +8,6 @@ function circumcircle(tri){ // tri: [{x,y},{x,y},{x,y}]
   const r = Math.hypot(a.x-ux,a.y-uy);
   return {x:ux,y:uy,r};
 }
-function triContains(tri, p){ // barycentric check (not strictly needed here)
-  const [a,b,c]=tri;
-  const area = (b.y-a.y)*(c.x-a.x) - (b.x-a.x)*(c.y-a.y);
-  const s = ((b.y-a.y)*(p.x-a.x)-(b.x-a.x)*(p.y-a.y))/area;
-  const t = (-(c.y-a.y)*(p.x-a.x)+(c.x-a.x)*(p.y-a.y))/area;
-  const u = 1 - s - t;
-  return s>=0 && t>=0 && u>=0;
-}
 
 /* ========= Delaunay via Bowyer–Watson ========= */
 function delaunay(points, bounds){

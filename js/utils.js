@@ -1,6 +1,5 @@
 /* ========= Utilities ========= */
 const $ = sel => document.querySelector(sel);
-const CSIZE = { w: 1280, h: 960 }; // base; will scale to fit container
 
 function fitCanvasToContainer(canvas){
   const wrap = canvas.parentElement;
@@ -12,7 +11,7 @@ function fitCanvasToContainer(canvas){
   const availableW = Math.max(1, wrap.clientWidth - padX);
   const availableH = Math.max(1, wrap.clientHeight - padY);
 
-  const scale = Math.min(availableW / canvas.width, availableH / canvas.height);
+  const scale = Math.min(1, availableW / canvas.width, availableH / canvas.height);
   const cssW = Math.max(1, Math.floor(canvas.width * scale));
   const cssH = Math.max(1, Math.floor(canvas.height * scale));
 

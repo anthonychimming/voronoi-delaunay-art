@@ -94,20 +94,34 @@ function polygonBounds(poly){
     maxX:Math.max(b.maxX,p.x), maxY:Math.max(b.maxY,p.y)
   }), {minX:Infinity,minY:Infinity,maxX:-Infinity,maxY:-Infinity});
 }
+function hatchGeometry(poly,step){
+  if(!isValidPolygon(poly) || !Number.isFinite(step) || step<=0) return null;
+  const bb = polygonBounds(poly);
+  const cx=(bb.minX+bb.maxX)/2, cy=(bb.minY+bb.maxY)/2;
+  // A square around the bounding-box diagonal covers the cell at any angle.
+  // Include a one-pixel margin for the line caps and clipping antialiasing.
+  const radius=Math.hypot(bb.maxX-bb.minX,bb.maxY-bb.minY)/2+1;
+  const origin=bb.minY-bb.maxX;
+  // Keep the established hatch phase while omitting off-cell lines.
+  const first=Math.ceil((cy-radius-origin)/step);
+  const last=Math.floor((cy+radius-origin)/step);
+  return {cx,cy,radius,origin,first,last};
+}
 function hatchFill(poly, step, angle, strokeStyle, alpha){
-  if(!pathPolygon(poly)) return;
+  const hatch = hatchGeometry(poly,step);
+  if(!hatch || !pathPolygon(poly)) return;
   ctx.save();
   ctx.clip();
   ctx.globalAlpha *= alpha;
   ctx.strokeStyle = strokeStyle;
   ctx.lineWidth = 1;
-  const bb = polygonBounds(poly);
-  const cx=(bb.minX+bb.maxX)/2, cy=(bb.minY+bb.maxY)/2;
+  const {cx,cy,radius,origin,first,last} = hatch;
   ctx.translate(cx,cy); ctx.rotate(angle); ctx.translate(-cx,-cy);
-  for(let y=bb.minY- bb.maxX; y<=bb.maxY+bb.maxX; y+=step){
+  for(let i=first; i<=last; i++){
+    const y=origin+i*step;
     ctx.beginPath();
-    ctx.moveTo(bb.minX-1000, y);
-    ctx.lineTo(bb.maxX+1000, y);
+    ctx.moveTo(cx-radius, y);
+    ctx.lineTo(cx+radius, y);
     ctx.stroke();
   }
   ctx.restore();
@@ -119,13 +133,14 @@ function polyToSVGPath(poly){
 }
 function hatchToSVG(poly, step, angle, color, opacity, id){
   const path = polyToSVGPath(poly);
-  if(!path) return '';
-  const bb = polygonBounds(poly);
-  const cx=(bb.minX+bb.maxX)/2, cy=(bb.minY+bb.maxY)/2;
+  const hatch = hatchGeometry(poly,step);
+  if(!path || !hatch) return '';
+  const {cx,cy,radius,origin,first,last} = hatch;
   let lines = '';
-  // Match the existing Canvas hatch spacing, origin and coverage.
-  for(let y=bb.minY-bb.maxX; y<=bb.maxY+bb.maxX; y+=step){
-    lines += `<path d="M ${bb.minX-1000} ${y} L ${bb.maxX+1000} ${y}"/>`;
+  // Share Canvas coverage, spacing and phase.
+  for(let i=first; i<=last; i++){
+    const y=origin+i*step;
+    lines += `<path d="M ${cx-radius} ${y} L ${cx+radius} ${y}"/>`;
   }
   return `<defs><clipPath id="${id}" clipPathUnits="userSpaceOnUse"><path d="${path}"/></clipPath></defs>` +
     `<g clip-path="url(#${id})"><g transform="rotate(${angle*180/Math.PI} ${cx} ${cy})" fill="none" stroke="${color}" stroke-width="1" stroke-opacity="${opacity*RENDER_STYLE.hatchAlpha}" stroke-linecap="round">${lines}</g></g>`;
@@ -160,6 +175,7 @@ function computeGeometry(state){
   const bounds = {minX:0,minY:0,maxX:width,maxY:height};
 
   // points
+  // Preserve warp-before-Lloyd ordering for compatibility with existing seeds.
   let pts = randomPoints(n, rand, bounds);
   if (warpAmt>0) pts = warpPoints(pts, noise, warpAmt, 220, bounds);
   if (lloydIters>0) pts = lloydRelax(pts, bounds, lloydIters);
