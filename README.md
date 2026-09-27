@@ -31,6 +31,31 @@ python -m http.server 8000
 
 Then open `http://localhost:8000/`.
 
+## Implementation notes
+
+Geometry preserves the existing order: seeded random sites → noise warp → Lloyd relaxation. Moving warp after Lloyd changes established seeded artwork, so the original order is retained even though relaxation can soften the warp.
+
+Traditional scripts and their explicit loading order remain in place. An ES module conversion is deferred because it would expand this targeted remediation and change direct `index.html` usage. No framework, dependencies, or build step are required by the application.
+
+Preview scaling fits the available space without enlarging beyond the Canvas backing resolution. PNG dimensions and the SVG viewBox still use the selected aspect ratio's backing size.
+
+Hatching uses each cell's bounding-box diagonal to limit line coverage. Canvas and SVG share that coverage, with the existing angles, spacing, and phase preserved. The shorter vector paths omit off-cell lines; cells whose rotated corners previously lacked coverage now hatch fully.
+
+The Canvas exposes artwork details to assistive technology. A separate polite status announces completed control changes, while slider `input` events remain quiet. Custom color fields retain their existing keyboard controls and explain the accepted hex format.
+
+## Checks
+
+Serve the app at `http://127.0.0.1:8765` and run these scripts with Playwright and Chrome available in your development environment:
+
+```bash
+node tests/custom-palette.cjs
+node tests/rendering.cjs
+node tests/performance.cjs
+node tests/stability.cjs
+```
+
+These development checks are optional tooling; the application itself remains dependency-free. They cover palettes and exports, geometry/rendering edge cases, cache and scheduling behavior, hatch coverage, preview sizing, and keyboard/assistive-technology semantics.
+
 ## License
 
 Voronoi & Delaunay Art is distributed under the **GNU General Public License v2.0 or later**. See **[LICENSE](LICENSE)**.
