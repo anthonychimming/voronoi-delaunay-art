@@ -183,11 +183,6 @@ function main(){
     }
   });
 
-  $('#regen').onclick = ()=>{
-    generate();
-    updateStatus();
-  };
-
   $('#shuffle').onclick = ()=>{
     shuffleSeed();
     generate();
