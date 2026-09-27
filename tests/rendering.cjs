@@ -131,6 +131,7 @@ const assert = require('node:assert/strict');
     const invalid=await page.evaluate(async()=>{
       const originalCells=voronoiCells, originalTris=delaunay;
       try {
+        cachedGeometry=null;
         voronoiCells=()=>[[],[{x:NaN,y:0},{x:1,y:1},{x:0,y:1}],null,[{x:10,y:10},{x:30,y:10},{x:10,y:30}]];
         delaunay=()=>[{a:{x:Infinity,y:0},b:{x:1,y:1},c:{x:0,y:1}},{a:{x:10,y:10},b:{x:30,y:10},c:{x:10,y:30}}];
         const point={x:8,y:9};
@@ -138,7 +139,7 @@ const assert = require('node:assert/strict');
         const results=[];
         for(const motif of ['voronoi-fill','voronoi-outline','delaunay-fill','wireframe','dual','hatch','centroids']) results.push(await renderCheck({motif,lloyd:0,drawSites:false}));
         return {kept,centroid:polygonCentroid([]),invalid:polygonCentroid([{x:NaN,y:0},{x:1,y:1},{x:0,y:1}]),path:polyToSVGPath([]),results};
-      } finally { voronoiCells=originalCells; delaunay=originalTris; }
+      } finally { voronoiCells=originalCells; delaunay=originalTris; cachedGeometry=null; }
     });
     assert.deepEqual(invalid.kept,{x:8,y:9});
     assert.equal(invalid.centroid,null); assert.equal(invalid.invalid,null); assert.equal(invalid.path,'');

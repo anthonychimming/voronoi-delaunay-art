@@ -31,7 +31,7 @@ function updateCustomColor(index, value, picker, swatch){
   } catch {
     // Keep editing usable when browser storage is disabled or full.
   }
-  generate();
+  scheduleRender();
 }
 
 function palettePreview(){
@@ -116,6 +116,23 @@ function updateStatus(){
   $('#statusSeed').textContent = 'seed · ' + ($('#seed').value.trim() || 'seed');
 }
 
+let renderRequestId = null;
+function scheduleRender(){
+  if(renderRequestId !== null) return;
+  renderRequestId = requestAnimationFrame(()=>{
+    renderRequestId = null;
+    renderFromUI();
+  });
+}
+
+function flushPendingRender(){
+  if(renderRequestId !== null){
+    cancelAnimationFrame(renderRequestId);
+    renderRequestId = null;
+    renderFromUI();
+  }
+}
+
 function renderFromUI(){
   readSliders();
   RANGE_IDS.forEach(id => updateRangeVisual($('#' + id)));
@@ -132,27 +149,28 @@ function main(){
   updateControlState();
   generate();
   updateStatus();
+  bindExportButtons();
 
   $('#motif').addEventListener('change', ()=>{
     updateControlState();
-    generate();
+    scheduleRender();
     updateStatus();
   });
 
   $('#palette').addEventListener('change', ()=>{
     palettePreview();
-    generate();
+    scheduleRender();
     updateStatus();
   });
 
   $('#bgMode').addEventListener('change', ()=>{
-    generate();
+    scheduleRender();
     updateStatus();
   });
 
   $('#aspect').addEventListener('change', ()=>{
     setAspect();
-    generate();
+    scheduleRender();
     updateStatus();
   });
 
@@ -161,31 +179,31 @@ function main(){
     input.addEventListener('input', ()=>{
       readSliders();
       updateRangeVisual(input);
-      generate();
+      scheduleRender();
       updateStatus();
     });
   });
 
   $('#drawSites').addEventListener('change', ()=>{
-    generate();
+    scheduleRender();
     updateStatus();
   });
 
   $('#seed').addEventListener('change', ()=>{
-    generate();
+    scheduleRender();
     updateStatus();
   });
   $('#seed').addEventListener('keydown', e=>{
     if(e.key === 'Enter'){
       e.preventDefault();
-      generate();
+      scheduleRender();
       updateStatus();
     }
   });
 
   $('#shuffle').onclick = ()=>{
     shuffleSeed();
-    generate();
+    scheduleRender();
     updateStatus();
   };
 

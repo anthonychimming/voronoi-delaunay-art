@@ -134,35 +134,69 @@ function download(filename, dataUrl){
   const a=document.createElement('a'); a.href=dataUrl; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
 }
 
-/* Main generate/render */
-function generate(){
-  const motif = $('#motif').value;
-  const n = +$('#nPts').value;
-  const seedStr = $('#seed').value.trim() || 'seed';
-  const strokeW = +$('#strokeW').value;
-  const opacity = +$('#opacity').value;
-  const warpAmt = +$('#warp').value;
-  const hatchDensity = +$('#hatchD').value;
-  const bgMode = $('#bgMode').value;
-  const pal = getActivePalette();
+/* Read appearance and geometry settings once per render. */
+function getRenderState(){
+  return {
+    motif: $('#motif').value,
+    n: +$('#nPts').value,
+    seedStr: $('#seed').value.trim() || 'seed',
+    strokeW: +$('#strokeW').value,
+    opacity: +$('#opacity').value,
+    warpAmt: +$('#warp').value,
+    lloydIters: +$('#lloyd').value,
+    hatchDensity: +$('#hatchD').value,
+    bgMode: $('#bgMode').value,
+    pal: [...getActivePalette()],
+    drawSites: $('#drawSites').checked,
+    width: canvas.width,
+    height: canvas.height
+  };
+}
 
+function computeGeometry(state){
+  const {n,seedStr,warpAmt,lloydIters,width,height} = state;
   const rand = seededPRNG(seedStr);
   const noise = Simplex2D(seedStr);
-  const bounds = {minX:0,minY:0,maxX:canvas.width,maxY:canvas.height};
+  const bounds = {minX:0,minY:0,maxX:width,maxY:height};
 
   // points
   let pts = randomPoints(n, rand, bounds);
   if (warpAmt>0) pts = warpPoints(pts, noise, warpAmt, 220, bounds);
-  const lloydIters = +$('#lloyd').value;
   if (lloydIters>0) pts = lloydRelax(pts, bounds, lloydIters);
 
   // structures
   const tris = delaunay(pts, bounds);
+  // Lloyd's last cells precede its final site move. Compute the final cells once;
+  // the geometry cache then reuses them for appearance changes and exports.
   const cells = voronoiCells(pts, bounds);
+  return {pts,tris,cells};
+}
+
+let cachedGeometry = null;
+let currentScene = null;
+function getGeometry(state){
+  const key = JSON.stringify([state.seedStr,state.n,state.lloydIters,state.warpAmt,state.width,state.height]);
+  if(!cachedGeometry || cachedGeometry.key !== key){
+    cachedGeometry = {key,geometry:computeGeometry(state)};
+  }
+  return cachedGeometry.geometry;
+}
+
+/* Main generate/render: keep a snapshot for exports without preparing SVG. */
+function generate(){
+  const state = getRenderState();
+  const geometry = getGeometry(state);
+  renderCanvas(state,geometry);
+  currentScene = {state,geometry};
+}
+
+function renderCanvas(state,geometry){
+  const {motif,strokeW,opacity,hatchDensity,bgMode,pal,drawSites,width,height} = state;
+  const {pts,tris,cells} = geometry;
 
   // draw
   ctx.save();
-  drawBackground(bgMode, canvas.width, canvas.height);
+  drawBackground(bgMode, width, height);
 
   ctx.globalAlpha = opacity;
   ctx.lineJoin = 'round'; ctx.lineCap = 'round';
@@ -236,17 +270,18 @@ function generate(){
   }
 
   // Optional draw sites
-  if($('#drawSites').checked && motif!=='centroids'){
+  if(drawSites && motif!=='centroids'){
     ctx.globalAlpha = RENDER_STYLE.siteAlpha;
     ctx.fillStyle = RENDER_STYLE.siteFill;
     for(const p of pts){ if(!isFinitePoint(p)) continue; ctx.beginPath(); ctx.arc(p.x,p.y,RENDER_STYLE.siteRadius,0,Math.PI*2); ctx.fill(); }
   }
 
   ctx.restore();
+}
 
-  // Prepare SVG data for export
-  const currentSVG = (()=>{
-    const w=canvas.width, h=canvas.height;
+function buildSVG(state,geometry){
+    const {motif,strokeW,opacity,hatchDensity,bgMode,pal,drawSites,width:w,height:h} = state;
+    const {pts,tris,cells} = geometry;
     let svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">\n`;
     // bg
     if(bgMode==='paper'){
@@ -303,23 +338,40 @@ function generate(){
     if(motif==='wireframe' && strokeW > 0){
       for(const poly of cells) svg += strokePath(poly, RENDER_STYLE.dualOverlayStroke, Math.max(0.6,strokeW*0.7), Math.min(1,opacity+0.05)*RENDER_STYLE.wireframeOverlayAlpha);
     }
-    if($('#drawSites').checked && motif!=='centroids'){
+    if(drawSites && motif!=='centroids'){
       for(const p of pts){
         if(isFinitePoint(p)) svg += `<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="${RENDER_STYLE.siteRadius}" fill="${RENDER_STYLE.siteFill}" fill-opacity="${RENDER_STYLE.siteAlpha}"/>`;
       }
     }
     svg += `\n</svg>`;
     return svg;
-  })();
+}
 
-  // wire up export buttons (late-bind so they grab latest state)
-  $('#savePng').onclick = ()=>{
-    canvas.toBlob(b=> download(`tessellation-${Date.now()}.png`, URL.createObjectURL(b)), 'image/png', 0.95);
-  };
-  $('#saveSvg').onclick = ()=>{
-    const blob = new Blob([currentSVG], {type:'image/svg+xml'});
-    download(`tessellation-${Date.now()}.svg`, URL.createObjectURL(blob));
-  };
+function downloadBlob(filename,blob){
+  if(!blob) return;
+  const url = URL.createObjectURL(blob);
+  try {
+    download(filename,url);
+  } finally {
+    // Allow the browser to begin the download before releasing the URL.
+    setTimeout(()=>URL.revokeObjectURL(url),0);
+  }
+}
+
+function savePNG(){
+  flushPendingRender();
+  canvas.toBlob(blob=>downloadBlob(`tessellation-${Date.now()}.png`,blob), 'image/png', 0.95);
+}
+
+function saveSVG(){
+  flushPendingRender();
+  const svg = buildSVG(currentScene.state,currentScene.geometry);
+  downloadBlob(`tessellation-${Date.now()}.svg`,new Blob([svg], {type:'image/svg+xml'}));
+}
+
+function bindExportButtons(){
+  $('#savePng').onclick = savePNG;
+  $('#saveSvg').onclick = saveSVG;
 }
 
 function readSliders(){
