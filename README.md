@@ -2,6 +2,8 @@
 
 Voronoi & Delaunay Art is an interactive generative art tool that transforms images into geometric compositions built from Voronoi cells and Delaunay triangulation, with adjustable styling, colour palettes, stroke treatment, and rendering controls for creating distinctive abstract, low-poly, and mosaic-like artwork.
 
+**[▶ Launch Voronoi & Delaunay — Generative Art Lab](https://anthonychimming.github.io/voronoi-delaunay-art/)**
+
 ## Structure
 
 ```text
